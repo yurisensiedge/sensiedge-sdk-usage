@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +17,6 @@ import com.sensisdk.DeviceManagerListener;
 /**
  * Created by yuri on 06/11/16.
  */
-
 public class NodeArrayAdapter extends ArrayAdapter<WirelessNode> implements DeviceManagerListener {
 
     /**
@@ -30,7 +30,11 @@ public class NodeArrayAdapter extends ArrayAdapter<WirelessNode> implements Devi
     private Drawable mSTEVAL_WESU1_Image;
     private Drawable mGenericImage;
 
-
+    /**
+     * build the adapter
+     *
+     * @param context context where the adapter will be used
+     */
     public NodeArrayAdapter(Activity context) {
         super(context, R.layout.node_view_item);
         mActivity = context;
@@ -39,34 +43,40 @@ public class NodeArrayAdapter extends ArrayAdapter<WirelessNode> implements Devi
 //        mNucleoImage = res.getDrawable(R.drawable.board_nucleo);
 //        mSTEVAL_WESU1_Image = res.getDrawable(R.drawable.board_steval_wesu1);
 //        mGenericImage = res.getDrawable(R.drawable.board_generic);
-
     }
+
+    /**
+     * disconnect al connected node manage by this adapter
+     */
+    void disconnectAllNodes() {
+        for (int i = 0; i < getCount(); i++) {
+//            Node n = getItem(i);
+//            if (n.isConnected())
+//                n.disconnect();
+        }//for
+    }//disconnectAllNodes
 
     @Override
     public void onDiscoveryFinish() {
-
+        Log.d("sensisdk", "DeviceManagerListener-onDiscoveryFinish()");
+        mActivity.invalidateOptionsMenu();
     }
 
     @Override
     public void onDiscoveryStart() {
-
+        Log.d("sensisdk", "DeviceManagerListener-onDiscoveryStart()");
+        mActivity.invalidateOptionsMenu();
     }
 
-//    public void onNodeDiscovered(Manager m, final Node node) {
-//        mActivity.runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                add(node);
-//            }//run
-//        });
-//    }
-//    void disconnectAllNodes() {
-//        for (int i = 0; i < getCount(); i++) {
-//            Node n = getItem(i);
-//            if (n.isConnected())
-//                n.disconnect();
-//        }//for
-//    }//disconnectAllNodes
+    @Override
+    public void onNodeDiscovery(final String strNodeName, final String strNodeMac) {
+        mActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                add(new WirelessNode(strNodeName, strNodeMac));
+            }//run
+        });
+    }
 
     /**
      * create a view that describe a particular node
@@ -94,12 +104,13 @@ public class NodeArrayAdapter extends ArrayAdapter<WirelessNode> implements Devi
             viewHolder = (ViewHolderItem) v.getTag();
         }//if-else
 
-        //get the corresponding sensor
-//        Node sensor = getItem(position);
+        // TODO get the corresponding sensor
+        WirelessNode sensor = getItem(position);
 
-//        viewHolder.sensorName.setText(sensor.getName());
-//        viewHolder.sensorTag.setText(sensor.getTag());
+        viewHolder.sensorName.setText(sensor.getName());
+        viewHolder.sensorTag.setText(sensor.getMac());
 //        switch (sensor.getType()) {
+//
 //            case STEVAL_WESU1:
 //                viewHolder.boardType.setImageDrawable(mSTEVAL_WESU1_Image);
 //                break;
@@ -112,7 +123,7 @@ public class NodeArrayAdapter extends ArrayAdapter<WirelessNode> implements Devi
 //        }//switch
 
         return v;
-    }//getView
+    }
 
     /**
      * class that contains view that we have to change between different items
@@ -121,8 +132,6 @@ public class NodeArrayAdapter extends ArrayAdapter<WirelessNode> implements Devi
         TextView sensorName;
         TextView sensorTag;
         ImageView boardType;
-    }//ViewHolderItem
-
-
+    }
 
 }
