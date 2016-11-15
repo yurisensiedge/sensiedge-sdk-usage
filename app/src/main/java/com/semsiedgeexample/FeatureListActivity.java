@@ -16,7 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.sensisdk.Logger;
+
 import com.sensisdk.nodes.AbstractNode;
 import com.st.BlueSTSDK.Feature;
 import com.st.BlueSTSDK.Manager;
@@ -116,7 +116,6 @@ public class FeatureListActivity extends AppCompatActivity implements AdapterVie
         String nodeTag = getIntent().getStringExtra(NODE_TAG);
         Logger.print("FeatureListActivity:onCreate() Chosen MAC: " + nodeTag);
         mNode = Manager.getSharedInstance().getNodeWithTag(nodeTag);
-//        mNode = new SensibleNode("SensiBLE", nodeTag);
 
         //create or recover the NodeContainerFragment
         if (savedInstanceState == null) {
@@ -126,7 +125,6 @@ public class FeatureListActivity extends AppCompatActivity implements AdapterVie
 
             getFragmentManager().beginTransaction()
                     .add(mNodeContainer, NODE_FRAGMENT).commit();
-
         } else {
             mNodeContainer = (NodeContainerFragment) getFragmentManager()
                     .findFragmentByTag(NODE_FRAGMENT);
@@ -147,9 +145,8 @@ public class FeatureListActivity extends AppCompatActivity implements AdapterVie
 
         menu.findItem(R.id.menu_showDebug).setVisible(mNode.getDebug() != null);
         menu.findItem(R.id.menu_showRegister).setVisible(mNode.getConfigRegister() != null);
-
         return true;
-    }//onCreateOptionMenu
+    }
 
     /**
      * start the activity with the debug console or for manage the configuration register
@@ -189,8 +186,8 @@ public class FeatureListActivity extends AppCompatActivity implements AdapterVie
         for (Feature f : features) {
             if (mNode.isEnableNotification(f))
                 mNode.disableNotification(f);
-        }//for sTestFeature
-    }//disableNeedNotification
+        }
+    }
 
     /**
      * create and populate the adapter with only the enabled features.
@@ -223,18 +220,14 @@ public class FeatureListActivity extends AppCompatActivity implements AdapterVie
             mNode.addNodeStateListener(mNodeStatusListener);
     }
 
-
     @Override
     protected void onPause() {
-
         //it is safe remove also if we didn't add it
         mNode.removeNodeStateListener(mNodeStatusListener);
-
         //if the node is already disconnected we don't care of disable the notification
         if (mNode.isConnected()) {
             disableNeedNotification();
-        }//if
-
+        }
         super.onPause();
     }
 
@@ -262,8 +255,8 @@ public class FeatureListActivity extends AppCompatActivity implements AdapterVie
             selectedFeature.addFeatureListener(mGenericUpdate);
 
             mNode.enableNotification(selectedFeature);
-        }//if-else
-    }//onItemClick
+        }
+    }
 
     /**
      * extend an array adapter for change the view content, instead of used the toString result
@@ -283,28 +276,21 @@ public class FeatureListActivity extends AppCompatActivity implements AdapterVie
          */
         @Override
         public View getView(int position, View v, ViewGroup parent) {
-            Log.d("debugme","getView()");
-
+            Logger.toDebug("getView()");
             if (v == null) {
                 LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 v = inflater.inflate(R.layout.feature_list_item, parent, false);
             }
-
             Feature f = getItem(position);
-
             ((TextView) v).setText(f.getName());
-
             return v;
-
-        }//getView
-
-    }//FeatureAdapter
+        }
+    }
 
     /**
      * class used for update the feature display data
      */
     class GenericFragmentUpdate implements Feature.FeatureListener {
-
         /**
          * text view that will contain the data/name
          */
@@ -315,7 +301,7 @@ public class FeatureListActivity extends AppCompatActivity implements AdapterVie
          */
         public GenericFragmentUpdate(TextView text) {
             mTextView = text;
-        }//GenericFragmentUpdate
+        }
 
         /**
          * set the text view text with the feature toString value
@@ -326,13 +312,13 @@ public class FeatureListActivity extends AppCompatActivity implements AdapterVie
         @Override
         public void onUpdate(Feature f, Feature.Sample sample) {
             final String featureDump = f.toString();
+            Logger.toDebug("Feature name: " + f.getName() + ": " + sample.data[0]);
             FeatureListActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     mTextView.setText(featureDump);
                 }
             });
-        }//onUpdate
-
-    }//GenericFragmentUpdate
+        }
+    }
 }

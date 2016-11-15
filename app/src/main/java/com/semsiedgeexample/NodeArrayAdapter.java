@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,9 +26,7 @@ public class NodeArrayAdapter extends ArrayAdapter<AbstractNode> implements Devi
     /**
      * image to show for the different boards
      */
-    private Drawable mNucleoImage;
-    private Drawable mSTEVAL_WESU1_Image;
-    private Drawable mGenericImage;
+    private Drawable mSensibleImage;
 
     /**
      * build the adapter
@@ -41,10 +38,8 @@ public class NodeArrayAdapter extends ArrayAdapter<AbstractNode> implements Devi
         mActivity = context;
         Resources res = mActivity.getResources();
         // TODO resolve getDrawable
-//        mNucleoImage = res.getDrawable(R.drawable.board_nucleo);
-//        mSTEVAL_WESU1_Image = res.getDrawable(R.drawable.board_steval_wesu1);
-//        mGenericImage = res.getDrawable(R.drawable.board_generic);
-    }//NodeArrayAdapter
+//        mSensiBleImage = res.getDrawable(R.drawable.sensible);
+    }
 
     /**
      * disconnect al connected node manage by this adapter
@@ -54,18 +49,18 @@ public class NodeArrayAdapter extends ArrayAdapter<AbstractNode> implements Devi
 //            AbstractNode n = getItem(i);
 //            if (n.isConnected())
 //                n.disconnect();
-        }//for
-    }//disconnectAllNodes
+        }
+    }
 
     @Override
     public void onDiscoveryFinish() {
-        Log.d("sensisdk", "DeviceManagerListener-onDiscoveryFinish()");
+        Logger.toDebug("DeviceManagerListener-onDiscoveryFinish()");
         mActivity.invalidateOptionsMenu();
     }
 
     @Override
     public void onDiscoveryStart() {
-        Log.d("sensisdk", "DeviceManagerListener-onDiscoveryStart()");
+        Logger.toDebug("DeviceManagerListener-onDiscoveryStart()");
         mActivity.invalidateOptionsMenu();
     }
 
@@ -75,7 +70,7 @@ public class NodeArrayAdapter extends ArrayAdapter<AbstractNode> implements Devi
             @Override
             public void run() {
                 add(sensiNode);
-            }//run
+            }
         });
     }
 
@@ -103,25 +98,13 @@ public class NodeArrayAdapter extends ArrayAdapter<AbstractNode> implements Devi
         } else {
             //else -> is a recycled view -> we have only to update the values
             viewHolder = (ViewHolderItem) v.getTag();
-        }//if-else
+        }
 
         // TODO get the corresponding sensor
         AbstractNode sensor = getItem(position);
 
         viewHolder.sensorName.setText(sensor.getName());
         viewHolder.sensorTag.setText(sensor.getTag());
-//        switch (sensor.getType()) {
-//
-//            case STEVAL_WESU1:
-//                viewHolder.boardType.setImageDrawable(mSTEVAL_WESU1_Image);
-//                break;
-//            case NUCLEO:
-//                viewHolder.boardType.setImageDrawable(mNucleoImage);
-//                break;
-//            case GENERIC:
-//            default:
-//                viewHolder.boardType.setImageDrawable(mGenericImage);
-//        }//switch
 
         return v;
     }

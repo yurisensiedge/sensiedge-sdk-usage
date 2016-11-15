@@ -102,7 +102,7 @@ public class NodeContainerFragment extends Fragment {
         mConnectionWait.setMessage(String.format(getResources().getString(R.string
                         .progressDialogConnMsg),
                 nodeName));
-    }//setUpProgressDialog
+    }
 
     /**
      * return the node handle by this fragment
@@ -126,7 +126,7 @@ public class NodeContainerFragment extends Fragment {
         mNode = Manager.getSharedInstance().getNodeWithTag(nodeTag);
         if (mNode != null)
             setUpProgressDialog(mNode.getName());
-    }//onCreate
+    }
 
     /**
      * if not already connected, show the dialog and stat the connection with the node
@@ -151,10 +151,9 @@ public class NodeContainerFragment extends Fragment {
         //dismiss the dialog if we are showing it
         if (mConnectionWait.isShowing()) {
             mConnectionWait.dismiss();
-        }//if
-
+        }
         super.onPause();
-    }//onPause
+    }
 
     /**
      * if true avoid to disconnect the node when the fragment is destroyed
