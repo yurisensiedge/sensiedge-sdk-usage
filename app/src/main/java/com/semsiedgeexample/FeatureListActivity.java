@@ -16,9 +16,12 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.sensisdk.AbstractNode;
 import com.sensisdk.Logger;
+import com.sensisdk.nodes.AbstractNode;
+import com.st.BlueSTSDK.Feature;
+import com.st.BlueSTSDK.Manager;
 
+import java.util.List;
 
 
 /**
@@ -43,7 +46,7 @@ public class FeatureListActivity extends AppCompatActivity implements AdapterVie
     /**
      * node that will stream the data
      */
-    private WirelessNode mNode;
+    private AbstractNode mNode;
 
     /**
      * fragment that manage the node connection and avoid a re connection each time the activity
@@ -59,31 +62,31 @@ public class FeatureListActivity extends AppCompatActivity implements AdapterVie
     /**
      * adapter that will build the feature item
      */
-//    private ArrayAdapter<Feature> mFeatureListAdapter;
+    private ArrayAdapter<Feature> mFeatureListAdapter;
 
     /**
      * listener that will be used for enable the notification when the node is connected
      */
-     private AbstractNode.NodeStateListener mNodeStatusListener = new AbstractNode.NodeStateListener() {
+    private AbstractNode.NodeStateListener mNodeStatusListener = new AbstractNode.NodeStateListener() {
         @Override
-        public void onStateChange(AbstractNode node, AbstractNode.State newState, AbstractNode.State prevState) {
-            Logger.print("onStateChange(): " + node.getMac() + "; State: " + newState);
+        public void onStateChange(final AbstractNode node, AbstractNode.State newState, AbstractNode.State prevState) {
+            Logger.print("onStateChange(): " + node.getTag() + "; State: " + newState);
             if (newState == AbstractNode.State.Connected) {
                 FeatureListActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         populateFeatureList();
                         invalidateOptionsMenu(); //enable/disable the settings options
-                    }//run
+                    }
                 });
-            }//if
+            }
         }
     };
 
     /**
      * listener that will update the displayed feature data
      */
-//    private Feature.FeatureListener mGenericUpdate;
+    private Feature.FeatureListener mGenericUpdate;
 
     /**
      * create an intent for start this activity
@@ -94,9 +97,9 @@ public class FeatureListActivity extends AppCompatActivity implements AdapterVie
      */
     public static Intent getStartIntent(Context c, @NonNull AbstractNode node) {
         Intent i = new Intent(c, FeatureListActivity.class);
-        i.putExtra(NODE_TAG, node.getMac());
+        i.putExtra(NODE_TAG, node.getTag());
         i.putExtras(NodeContainerFragment.prepareArguments(node));
-        Logger.print("FeatureListActivity:node.getTag(): " + node.getMac());
+        Logger.print("FeatureListActivity:node.getTag(): " + node.getTag());
         return i;
     }
 
@@ -105,31 +108,31 @@ public class FeatureListActivity extends AppCompatActivity implements AdapterVie
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_demo);
 
-//        //load the gui
-//        mFeatureList = (ListView) findViewById(R.id.featureList);
-//        mFeatureList.setOnItemClickListener(this);
+        //load the gui
+        mFeatureList = (ListView) findViewById(R.id.featureList);
+        mFeatureList.setOnItemClickListener(this);
 
         //find the node
         String nodeTag = getIntent().getStringExtra(NODE_TAG);
         Logger.print("FeatureListActivity:onCreate() Chosen MAC: " + nodeTag);
-// TODO       mNode = Manager.getSharedInstance().getNodeWithTag(nodeTag);
-        mNode = new WirelessNode("SensiBLE", nodeTag);
+        mNode = Manager.getSharedInstance().getNodeWithTag(nodeTag);
+//        mNode = new SensibleNode("SensiBLE", nodeTag);
 
-//        //create or recover the NodeContainerFragment
-//        if (savedInstanceState == null) {
-//            Intent i = getIntent();
-//            mNodeContainer = new NodeContainerFragment();
-//            mNodeContainer.setArguments(i.getExtras());
-//
-//            getFragmentManager().beginTransaction()
-//                    .add(mNodeContainer, NODE_FRAGMENT).commit();
-//
-//        } else {
-//            mNodeContainer = (NodeContainerFragment) getFragmentManager()
-//                    .findFragmentByTag(NODE_FRAGMENT);
-//
-//        }//if-else
-    }//onCreate
+        //create or recover the NodeContainerFragment
+        if (savedInstanceState == null) {
+            Intent i = getIntent();
+            mNodeContainer = new NodeContainerFragment();
+            mNodeContainer.setArguments(i.getExtras());
+
+            getFragmentManager().beginTransaction()
+                    .add(mNodeContainer, NODE_FRAGMENT).commit();
+
+        } else {
+            mNodeContainer = (NodeContainerFragment) getFragmentManager()
+                    .findFragmentByTag(NODE_FRAGMENT);
+
+        }
+    }
 
     /**
      * build the menu and show the item only if the service is available in the node
@@ -142,8 +145,8 @@ public class FeatureListActivity extends AppCompatActivity implements AdapterVie
         Logger.print("onCreateOptionsMenu()");
         getMenuInflater().inflate(R.menu.menu_demo, menu);
 
-// TODO       menu.findItem(R.id.menu_showDebug).setVisible(mNode.getDebug() != null);
-//        menu.findItem(R.id.menu_showRegister).setVisible(mNode.getConfigRegister() != null);
+        menu.findItem(R.id.menu_showDebug).setVisible(mNode.getDebug() != null);
+        menu.findItem(R.id.menu_showRegister).setVisible(mNode.getConfigRegister() != null);
 
         return true;
     }//onCreateOptionMenu
@@ -156,7 +159,7 @@ public class FeatureListActivity extends AppCompatActivity implements AdapterVie
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Log.d("debugme","onOptionsItemSelected()");
+        Logger.print("onOptionsItemSelected()");
 
         int id = item.getItemId();
 
@@ -166,14 +169,14 @@ public class FeatureListActivity extends AppCompatActivity implements AdapterVie
         //noinspection SimplifiableIfStatement
         if (id == R.id.menu_showRegister) {
             mNodeContainer.keepConnectionOpen(true);
-// TODO           startActivity(SettingsActivity.getStartIntent(this, mNode));
+//            startActivity(SettingsActivity.getStartIntent(this, mNode));
             return true;
-        }//else
+        }
         if (id == R.id.menu_showDebug) {
             mNodeContainer.keepConnectionOpen(true);
-// TODO           startActivity(DebugConsoleActivity.getStartIntent(this, mNode));
+//            startActivity(DebugConsoleActivity.getStartIntent(this, mNode));
             return true;
-        }//else
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -182,34 +185,30 @@ public class FeatureListActivity extends AppCompatActivity implements AdapterVie
      * stop all the enabled notification
      */
     private void disableNeedNotification() {
-// TODO       List<Feature> features = mNode.getFeatures();
-//        for (Feature f : features) {
-//            if (mNode.isEnableNotification(f))
-//                mNode.disableNotification(f);
-//        }//for sTestFeature
+        List<Feature> features = mNode.getFeatures();
+        for (Feature f : features) {
+            if (mNode.isEnableNotification(f))
+                mNode.disableNotification(f);
+        }//for sTestFeature
     }//disableNeedNotification
 
     /**
      * create and populate the adapter with only the enabled features.
      */
     private void populateFeatureList() {
-        Log.d("debugme","populateFeatureList()");
+        Log.d("sensisdk","populateFeatureList()");
         if (mNode != null) {
-// TODO           mFeatureListAdapter = new FeatureAdapter(this,
-//                    R.layout.feature_list_item);
-// TODO           List<Feature> features = mNode.getFeatures();
-//            for (Feature f : features) {
-//                if (f.isEnabled()) {
-//                    mFeatureListAdapter.add(f);
-//                }//if
-//            }//for
-
+            mFeatureListAdapter = new FeatureAdapter(this, R.layout.feature_list_item);
+            List<Feature> features = mNode.getFeatures();
+            for (Feature f : features) {
+                if (f.isEnabled()) {
+                    mFeatureListAdapter.add(f);
+                }
+            }
             //set the adapter as data source for the adapter
-//            mFeatureList.setAdapter(mFeatureListAdapter);
-
-        }//if
-    }//populateFeatureList
-
+            mFeatureList.setAdapter(mFeatureListAdapter);
+        }
+    }
 
     /**
      * if the node is connected enable the gui, otherwise set a listener that will do that
@@ -220,25 +219,24 @@ public class FeatureListActivity extends AppCompatActivity implements AdapterVie
         if (mNode.isConnected()) {
             populateFeatureList();
             invalidateOptionsMenu(); //enable/disable the settings options
-        }
-//        } else
-//            mNode.addNodeStateListener(mNodeStatusListener);
-    }//onResume
+        } else
+            mNode.addNodeStateListener(mNodeStatusListener);
+    }
 
 
     @Override
     protected void onPause() {
 
         //it is safe remove also if we didn't add it
-// TODO       mNode.removeNodeStateListener(mNodeStatusListener);
+        mNode.removeNodeStateListener(mNodeStatusListener);
 
         //if the node is already disconnected we don't care of disable the notification
-// TODO       if (mNode.isConnected()) {
-//            disableNeedNotification();
-//        }//if
+        if (mNode.isConnected()) {
+            disableNeedNotification();
+        }//if
 
         super.onPause();
-    }//stopDemo
+    }
 
     /**
      * When a user select a row we enable/disable the notification for that feature
@@ -250,91 +248,91 @@ public class FeatureListActivity extends AppCompatActivity implements AdapterVie
      */
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-//        Feature selectedFeature = mFeatureListAdapter.getItem(position);
+        Feature selectedFeature = mFeatureListAdapter.getItem(position);
 
-// TODO       if (mNode.isEnableNotification(selectedFeature)) {
-//
-//            selectedFeature.removeFeatureListener(mGenericUpdate);
-//            mNode.disableNotification(selectedFeature);
-//
-//            ((TextView) view).setText(selectedFeature.getName()); //reset the cell name
-//        } else {
-//            //create a listener that will update the selected view
-//            mGenericUpdate = new GenericFragmentUpdate((TextView) view);
-//            selectedFeature.addFeatureListener(mGenericUpdate);
-//
-//            mNode.enableNotification(selectedFeature);
-//        }//if-else
+        if (mNode.isEnableNotification(selectedFeature)) {
+
+            selectedFeature.removeFeatureListener(mGenericUpdate);
+            mNode.disableNotification(selectedFeature);
+
+            ((TextView) view).setText(selectedFeature.getName()); //reset the cell name
+        } else {
+            //create a listener that will update the selected view
+            mGenericUpdate = new GenericFragmentUpdate((TextView) view);
+            selectedFeature.addFeatureListener(mGenericUpdate);
+
+            mNode.enableNotification(selectedFeature);
+        }//if-else
     }//onItemClick
 
     /**
      * extend an array adapter for change the view content, instead of used the toString result
      * we use the feature name
      */
-//    private static class FeatureAdapter extends ArrayAdapter<Feature> {
-//
-//        /**
-//         * @see ArrayAdapter#ArrayAdapter(Context, int)
-//         */
-//        public FeatureAdapter(Context c, int resourceId) {
-//            super(c, resourceId);
-//        }
-//
-//        /**
-//         * create a text view and initialize it with the equivalent feature name
-//         */
-//        @Override
-//        public View getView(int position, View v, ViewGroup parent) {
-//            Log.d("debugme","getView()");
-//
-//            if (v == null) {
-//                LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//                v = inflater.inflate(R.layout.feature_list_item, parent, false);
-//            }
-//
-//            Feature f = getItem(position);
-//
-//            ((TextView) v).setText(f.getName());
-//
-//            return v;
-//
-//        }//getView
-//
-//    }//FeatureAdapter
+    class FeatureAdapter extends ArrayAdapter<Feature> {
 
-//    /**
-//     * class used for update the feature display data
-//     */
-//    private class GenericFragmentUpdate implements Feature.FeatureListener {
-//
-//        /**
-//         * text view that will contain the data/name
-//         */
-//        final private TextView mTextView;
-//
-//        /**
-//         * @param text text view that will show the name/values
-//         */
-//        public GenericFragmentUpdate(TextView text) {
-//            mTextView = text;
-//        }//GenericFragmentUpdate
-//
-//        /**
-//         * set the text view text with the feature toString value
-//         *
-//         * @param f      feature that has received an update
-//         * @param sample new data received from the feature
-//         */
-//        @Override
-//        public void onUpdate(Feature f, Feature.Sample sample) {
-//            final String featureDump = f.toString();
-//            FeatureListActivity.this.runOnUiThread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    mTextView.setText(featureDump);
-//                }
-//            });
-//        }//onUpdate
-//
-//    }//GenericFragmentUpdate
+        /**
+         * @see ArrayAdapter#ArrayAdapter(Context, int)
+         */
+        public FeatureAdapter(Context c, int resourceId) {
+            super(c, resourceId);
+        }
+
+        /**
+         * create a text view and initialize it with the equivalent feature name
+         */
+        @Override
+        public View getView(int position, View v, ViewGroup parent) {
+            Log.d("debugme","getView()");
+
+            if (v == null) {
+                LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                v = inflater.inflate(R.layout.feature_list_item, parent, false);
+            }
+
+            Feature f = getItem(position);
+
+            ((TextView) v).setText(f.getName());
+
+            return v;
+
+        }//getView
+
+    }//FeatureAdapter
+
+    /**
+     * class used for update the feature display data
+     */
+    class GenericFragmentUpdate implements Feature.FeatureListener {
+
+        /**
+         * text view that will contain the data/name
+         */
+        final private TextView mTextView;
+
+        /**
+         * @param text text view that will show the name/values
+         */
+        public GenericFragmentUpdate(TextView text) {
+            mTextView = text;
+        }//GenericFragmentUpdate
+
+        /**
+         * set the text view text with the feature toString value
+         *
+         * @param f      feature that has received an update
+         * @param sample new data received from the feature
+         */
+        @Override
+        public void onUpdate(Feature f, Feature.Sample sample) {
+            final String featureDump = f.toString();
+            FeatureListActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mTextView.setText(featureDump);
+                }
+            });
+        }//onUpdate
+
+    }//GenericFragmentUpdate
 }

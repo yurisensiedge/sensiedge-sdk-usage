@@ -6,7 +6,9 @@ import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.widget.Toast;
 
-import com.sensisdk.AbstractNode;
+
+import com.sensisdk.nodes.AbstractNode;
+import com.st.BlueSTSDK.Manager;
 
 public class NodeContainerFragment extends Fragment {
     /**
@@ -32,7 +34,7 @@ public class NodeContainerFragment extends Fragment {
      */
     private AbstractNode.NodeStateListener mNodeStateListener = new AbstractNode.NodeStateListener() {
         @Override
-        public void onStateChange(AbstractNode node, AbstractNode.State newState, AbstractNode.State prevState) {
+        public void onStateChange(final AbstractNode node, AbstractNode.State newState, AbstractNode.State prevState) {
             final Activity activity = NodeContainerFragment.this.getActivity();
             //we connect -> hide the dialog
             if ((newState == AbstractNode.State.Connected) && activity != null) {
@@ -70,7 +72,7 @@ public class NodeContainerFragment extends Fragment {
                         if (!mConnectionWait.isShowing())
                             mConnectionWait.show();
                         Toast.makeText(activity, msg, Toast.LENGTH_LONG).show();
-// TODO                       mNode.connect(getActivity());
+                        mNode.connect(getActivity());
                     }
                 });
             }
@@ -85,7 +87,7 @@ public class NodeContainerFragment extends Fragment {
      */
     public static Bundle prepareArguments(AbstractNode n) {
         Bundle args = new Bundle();
-        args.putString(NODE_TAG, n.getMac());
+        args.putString(NODE_TAG, n.getTag());
         return args;
     }
 
@@ -100,7 +102,7 @@ public class NodeContainerFragment extends Fragment {
         mConnectionWait.setMessage(String.format(getResources().getString(R.string
                         .progressDialogConnMsg),
                 nodeName));
-    }
+    }//setUpProgressDialog
 
     /**
      * return the node handle by this fragment
@@ -121,10 +123,10 @@ public class NodeContainerFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         String nodeTag = getArguments().getString(NODE_TAG);
-// TODO       mNode = Manager.getSharedInstance().getNodeWithTag(nodeTag);
+        mNode = Manager.getSharedInstance().getNodeWithTag(nodeTag);
         if (mNode != null)
             setUpProgressDialog(mNode.getName());
-    }
+    }//onCreate
 
     /**
      * if not already connected, show the dialog and stat the connection with the node
@@ -133,9 +135,9 @@ public class NodeContainerFragment extends Fragment {
     public void onResume() {
         super.onResume();
         if (mNode != null && !mNode.isConnected()) {
-// TODO           mConnectionWait.show(); //show the dialog and set the listener for hide it
-//            mNode.addNodeStateListener(mNodeStateListener);
-//            mNode.connect(getActivity());
+            mConnectionWait.show(); //show the dialog and set the listener for hide it
+            mNode.addNodeStateListener(mNodeStateListener);
+            mNode.connect(getActivity());
         }
     }
 
@@ -152,7 +154,7 @@ public class NodeContainerFragment extends Fragment {
         }//if
 
         super.onPause();
-    }
+    }//onPause
 
     /**
      * if true avoid to disconnect the node when the fragment is destroyed
@@ -169,8 +171,8 @@ public class NodeContainerFragment extends Fragment {
     public void onDestroy() {
         if (mNode != null && mNode.isConnected()) {
             if (!userAskToKeepConnection) {
-// TODO               mNode.removeNodeStateListener(mNodeStateListener);
-//                mNode.disconnect();
+                mNode.removeNodeStateListener(mNodeStateListener);
+                mNode.disconnect();
             }
         }
         super.onDestroy();

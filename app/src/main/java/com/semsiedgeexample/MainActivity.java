@@ -6,7 +6,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,7 +14,7 @@ import android.widget.AdapterView;
 
 import com.sensisdk.BleManager;
 import com.sensisdk.DeviceManager;
-import com.sensisdk.DeviceManagerListener;
+import com.sensisdk.nodes.AbstractNode;
 
 public class MainActivity extends AppCompatActivity implements AbsListView.OnItemClickListener {
 
@@ -42,9 +41,8 @@ public class MainActivity extends AppCompatActivity implements AbsListView.OnIte
         // Set OnItemClickListener so we can be notified on item clicks
         listView.setOnItemClickListener(this);
 
-//        //add the already discovered nodes
-// TODO       mAdapter.addAll(mManager.getNodes());
-
+        //add the already discovered nodes
+        mAdapter.addAll(mBleManager.getNodes());
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -86,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements AbsListView.OnIte
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        WirelessNode n = mAdapter.getItem(i);
+        AbstractNode n = mAdapter.getItem(i);
         Intent intent = FeatureListActivity.getStartIntent(this, n);
         startActivity(intent);
     }

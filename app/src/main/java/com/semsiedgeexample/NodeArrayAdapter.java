@@ -13,11 +13,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sensisdk.DeviceManagerListener;
+import com.sensisdk.nodes.AbstractNode;
 
 /**
  * Created by yuri on 06/11/16.
  */
-public class NodeArrayAdapter extends ArrayAdapter<WirelessNode> implements DeviceManagerListener {
+public class NodeArrayAdapter extends ArrayAdapter<AbstractNode> implements DeviceManagerListener {
 
     /**
      * activity where this adapter is attached
@@ -43,14 +44,14 @@ public class NodeArrayAdapter extends ArrayAdapter<WirelessNode> implements Devi
 //        mNucleoImage = res.getDrawable(R.drawable.board_nucleo);
 //        mSTEVAL_WESU1_Image = res.getDrawable(R.drawable.board_steval_wesu1);
 //        mGenericImage = res.getDrawable(R.drawable.board_generic);
-    }
+    }//NodeArrayAdapter
 
     /**
      * disconnect al connected node manage by this adapter
      */
     void disconnectAllNodes() {
         for (int i = 0; i < getCount(); i++) {
-//            Node n = getItem(i);
+//            AbstractNode n = getItem(i);
 //            if (n.isConnected())
 //                n.disconnect();
         }//for
@@ -69,11 +70,11 @@ public class NodeArrayAdapter extends ArrayAdapter<WirelessNode> implements Devi
     }
 
     @Override
-    public void onNodeDiscovery(final String strNodeName, final String strNodeMac) {
+    public void onNodeDiscovery(final AbstractNode sensiNode) {
         mActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                add(new WirelessNode(strNodeName, strNodeMac));
+                add(sensiNode);
             }//run
         });
     }
@@ -105,10 +106,10 @@ public class NodeArrayAdapter extends ArrayAdapter<WirelessNode> implements Devi
         }//if-else
 
         // TODO get the corresponding sensor
-        WirelessNode sensor = getItem(position);
+        AbstractNode sensor = getItem(position);
 
         viewHolder.sensorName.setText(sensor.getName());
-        viewHolder.sensorTag.setText(sensor.getMac());
+        viewHolder.sensorTag.setText(sensor.getTag());
 //        switch (sensor.getType()) {
 //
 //            case STEVAL_WESU1:
