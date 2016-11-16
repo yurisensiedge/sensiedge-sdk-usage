@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,9 +16,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 
+import com.sensisdk.DeviceManager;
 import com.sensisdk.nodes.AbstractNode;
 import com.st.BlueSTSDK.Feature;
-import com.st.BlueSTSDK.Manager;
+
 
 import java.util.List;
 
@@ -115,7 +115,7 @@ public class FeatureListActivity extends AppCompatActivity implements AdapterVie
         //find the node
         String nodeTag = getIntent().getStringExtra(NODE_TAG);
         Logger.print("FeatureListActivity:onCreate() Chosen MAC: " + nodeTag);
-        mNode = Manager.getSharedInstance().getNodeWithTag(nodeTag);
+        mNode = DeviceManager.getBleManager().getNodeWithTag(nodeTag);
 
         //create or recover the NodeContainerFragment
         if (savedInstanceState == null) {
@@ -142,9 +142,8 @@ public class FeatureListActivity extends AppCompatActivity implements AdapterVie
         // Inflate the menu; this adds items to the action bar if it is present.
         Logger.print("onCreateOptionsMenu()");
         getMenuInflater().inflate(R.menu.menu_demo, menu);
-
-        menu.findItem(R.id.menu_showDebug).setVisible(mNode.getDebug() != null);
-        menu.findItem(R.id.menu_showRegister).setVisible(mNode.getConfigRegister() != null);
+//        menu.findItem(R.id.menu_showDebug).setVisible(mNode.getDebug() != null);
+//        menu.findItem(R.id.menu_showRegister).setVisible(mNode.getConfigRegister() != null);
         return true;
     }
 
@@ -174,7 +173,6 @@ public class FeatureListActivity extends AppCompatActivity implements AdapterVie
 //            startActivity(DebugConsoleActivity.getStartIntent(this, mNode));
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -193,7 +191,7 @@ public class FeatureListActivity extends AppCompatActivity implements AdapterVie
      * create and populate the adapter with only the enabled features.
      */
     private void populateFeatureList() {
-        Log.d("sensisdk","populateFeatureList()");
+        Logger.toDebug("populateFeatureList()");
         if (mNode != null) {
             mFeatureListAdapter = new FeatureAdapter(this, R.layout.feature_list_item);
             List<Feature> features = mNode.getFeatures();

@@ -6,9 +6,8 @@ import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.widget.Toast;
 
-
+import com.sensisdk.DeviceManager;
 import com.sensisdk.nodes.AbstractNode;
-import com.st.BlueSTSDK.Manager;
 
 public class NodeContainerFragment extends Fragment {
     /**
@@ -123,7 +122,7 @@ public class NodeContainerFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         String nodeTag = getArguments().getString(NODE_TAG);
-        mNode = Manager.getSharedInstance().getNodeWithTag(nodeTag);
+        mNode = DeviceManager.getBleManager().getNodeWithTag(nodeTag);
         if (mNode != null)
             setUpProgressDialog(mNode.getName());
     }
@@ -141,13 +140,11 @@ public class NodeContainerFragment extends Fragment {
         }
     }
 
-
     /**
      * if we are still connection hide the progress dialog
      */
     @Override
     public void onPause() {
-
         //dismiss the dialog if we are showing it
         if (mConnectionWait.isShowing()) {
             mConnectionWait.dismiss();
