@@ -1,4 +1,4 @@
-package com.sensiedgeexample;
+package com.sensiedge.uiexample;
 
 import android.content.Context;
 import android.content.Intent;
@@ -15,11 +15,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-
 import com.sensisdk.DeviceManager;
 import com.sensisdk.nodes.AbstractNode;
 import com.st.BlueSTSDK.Feature;
-
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.sensiedgeexample;
+package com.sensiedge.uiexample;
 
 import android.app.Activity;
 import android.content.Context;
@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.sensiedge.uiexample.R;
 import com.sensisdk.DeviceManagerListener;
 import com.sensisdk.nodes.AbstractNode;
 

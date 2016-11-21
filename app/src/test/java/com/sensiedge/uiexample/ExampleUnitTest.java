@@ -1,4 +1,4 @@
-package com.sensiedgeexample;
+package com.sensiedge.uiexample;
 
 import org.junit.Test;
 

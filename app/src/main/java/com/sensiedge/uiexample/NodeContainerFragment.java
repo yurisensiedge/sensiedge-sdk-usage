@@ -1,4 +1,4 @@
-package com.sensiedgeexample;
+package com.sensiedge.uiexample;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -6,10 +6,9 @@ import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import com.sensiedge.uiexample.R;
 import com.sensisdk.DeviceManager;
 import com.sensisdk.nodes.AbstractNode;
-
-
 
 
 public class NodeContainerFragment extends Fragment {
