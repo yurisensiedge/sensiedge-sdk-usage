@@ -1,4 +1,4 @@
-package com.semsiedgeexample;
+package com.sensiedgeexample;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.semsiedgeexample", appContext.getPackageName());
+        assertEquals("com.sensiedgeexample", appContext.getPackageName());
     }
 }

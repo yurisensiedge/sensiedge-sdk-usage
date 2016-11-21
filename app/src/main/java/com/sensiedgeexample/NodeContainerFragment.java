@@ -1,4 +1,4 @@
-package com.semsiedgeexample;
+package com.sensiedgeexample;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -8,6 +8,9 @@ import android.widget.Toast;
 
 import com.sensisdk.DeviceManager;
 import com.sensisdk.nodes.AbstractNode;
+
+
+
 
 public class NodeContainerFragment extends Fragment {
     /**

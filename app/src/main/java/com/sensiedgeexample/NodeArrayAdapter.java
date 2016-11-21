@@ -1,4 +1,4 @@
-package com.semsiedgeexample;
+package com.sensiedgeexample;
 
 import android.app.Activity;
 import android.content.Context;

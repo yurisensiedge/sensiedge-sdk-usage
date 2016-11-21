@@ -1,4 +1,4 @@
-package com.semsiedgeexample;
+package com.sensiedgeexample;
 
 import android.util.Log;
 
