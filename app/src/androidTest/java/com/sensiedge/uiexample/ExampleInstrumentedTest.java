@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertEquals;
+import android.support.test.uiautomator.UiDevice;
 
 /**
  * Instrumentation test, which will execute on an Android device.
@@ -16,11 +17,14 @@ import static org.junit.Assert.assertEquals;
  */
 @RunWith(AndroidJUnit4.class)
 public class ExampleInstrumentedTest {
+
+    public UiDevice mDevice;
+
     @Test
     public void useAppContext() throws Exception {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.sensiedgeexample", appContext.getPackageName());
+        assertEquals("com.sensiedge.uiexample", appContext.getPackageName());
     }
 }
